@@ -11,7 +11,7 @@ const composeCharacteristics = data => {
   }))
 }
 
-const productInfoMap = {
+const productDetailsMap = {
   description: get('description'),
   price      : get('price'),
   name       : get('name'),
@@ -19,15 +19,15 @@ const productInfoMap = {
   options    : composeCharacteristics,
 }
 
-const grabData = data => {
+const selectRequiredData = rawDataObj => {
   const newObj = {}
 
-  Object.entries(productInfoMap).forEach(product => {
+  Object.entries(productDetailsMap).forEach(product => {
     const [prop, func] = product
-    newObj[prop] = func(data)
+    newObj[prop] = func(rawDataObj)
   })
 
   return newObj
 }
 
-module.exports = grabData
+module.exports = selectRequiredData

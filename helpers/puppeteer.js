@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer')
 
 const LAUNCH_PUPPETEER_OPTS = {
   args: [
+    '--single-process',
+    '--no-zygote',
     '--no-sandbox',
     '--disable-setuid-sandbox',
     '--disable-dev-shm-usage',
@@ -12,9 +14,8 @@ const LAUNCH_PUPPETEER_OPTS = {
 }
 
 const PAGE_PUPPETEER_OPTS = {
-  networkIdle2Timeout: 5000,
-  waitUntil          : 'networkidle2',
-  timeout            : 3000000,
+  waitUntil          : 'load',
+  timeout            : 0,
 }
 
 class PuppeteerHandler {
@@ -39,6 +40,7 @@ class PuppeteerHandler {
       const page = await this.browser.newPage()
       await page.goto(url, PAGE_PUPPETEER_OPTS)
       const content = await page.content()
+      await page.close()
       return content
     } catch (err) {
       throw err

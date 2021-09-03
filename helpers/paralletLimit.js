@@ -1,3 +1,5 @@
+const chalk = require('chalk')
+
 module.exports = (tasks, limit) => {
   const total = tasks.length
 
@@ -29,7 +31,13 @@ module.exports = (tasks, limit) => {
 
     const iteratee = i =>
       Promise.resolve()
-        .then(() => tasks[i]())
+        .then(() => {
+          if (typeof tasks[i] !== 'function') {
+            console.log(chalk.bgRed(tasks[i]))
+          }
+
+          return tasks[i]()
+        })
         .then(onTaskComplete(i), reject)
 
     const replenish = () => {

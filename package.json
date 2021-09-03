@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./ --ext .js --fix",
-    "start": "npm run clean && babel-node app.js",
-    "clean": "rm -rf data && mkdir data"
+    "start": "npm run clean && babel-node index.js",
+    "clean": "rm -rf db && mkdir db"
   },
   "dependencies": {
     "@babel/core": "^7.4.5",
