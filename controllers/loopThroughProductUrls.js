@@ -1,7 +1,7 @@
 const cheerio = require('cheerio')
 const chalk = require('chalk')
-const parallelLimit = require('../helpers/paralletLimit')
-const p = require('../helpers/common')
+const { parallelLimit } = require('async')
+const { p } = require('../helpers/common')
 const storage = require('../helpers/storage')
 
 const getProductContent = async productUrl => {
@@ -20,14 +20,13 @@ const getProductContent = async productUrl => {
     storage.push(dataAfterClearing)
   } catch (err) {
     console.error(err)
-    console.log(chalk.red.bold(`Cannot read property 'children' of undefined: `) + chalk.red(productUrl))
   }
 }
 
 async function loopThroughProductUrls(data) {
-  return parallelLimit(data.map(product => {
-    return () => getProductContent(product)
-  }), 5)
+    return parallelLimit(data.map(product => {
+      return async () => await getProductContent(product)
+    }), 5)
 }
 
 module.exports = loopThroughProductUrls

@@ -1,9 +1,9 @@
 const fs = require('fs')
 const cheerio = require('cheerio')
 const chalk = require('chalk')
-const parallelLimit = require('./helpers/paralletLimit')
+const { parallelLimit } = require('async')
 const loopThroughProductUrls = require('./controllers/loopThroughProductUrls')
-const p = require('./helpers/common')
+const { getCurrentPaginationNum, getUrlOfNextPage, p } = require('./helpers/common')
 const selectRequiredData = require('./controllers/selectRequiredData')
 const productPages = require('./helpers/productPages')
 const storage = require('./helpers/storage')
@@ -14,29 +14,29 @@ const loopThroughPages = () => {
   console.log(chalk.red.bold(startTime))
 
   return parallelLimit(productPages.map(page => {
-    return () => collectProductsFromPage(page)
+    return async () => await collectProductsFromPage(page)
   }), 5)
 }
 
-const collectProductsFromPage = async url => {
-  console.log(chalk.yellowBright(`Getting data from: `) + chalk.yellowBright.bold(url))
+const collectProductsFromPage = async categoryPage => {
+  console.log(chalk.yellowBright(`Getting data from: `) + chalk.yellowBright.bold(categoryPage))
 
-  const pageContent = await p.getPageContent(url)
+  const pageContent = await p.getPageContent(categoryPage)
   const $ = cheerio.load(pageContent)
 
-  const currentPaginationNumber = Number(url.slice(-1))
-  const quantityOfPagesInPagination = Number($('.s1a5ir').find('*').last().text())
+  const quantityOfPagination = Number($('.s1a5ir').find('*').last().text()) || 1
+  const curPaginationNum = getCurrentPaginationNum(categoryPage)
 
   let linksToProducts = []
 
   $('._3mKI1').each((i, product) => {
-    const url = $(product).attr('href')
+    const productLink = $(product).attr('href')
 
-    linksToProducts.push(url)
+    linksToProducts.push(productLink)
   })
 
-  if (currentPaginationNumber !== quantityOfPagesInPagination) {
-    await collectProductsFromPage(url.replace(/\d$/gm, currentPaginationNumber + 1))
+  if (curPaginationNum !== quantityOfPagination) {
+    await collectProductsFromPage(decodeURIComponent(getUrlOfNextPage(categoryPage)))
   }
 
   await loopThroughProductUrls(linksToProducts)
@@ -46,5 +46,5 @@ loopThroughPages().catch(console.error).finally(() => {
   fs.writeFileSync('./db/db.json', JSON.stringify(storage.map((s) => selectRequiredData(s.product))))
 
   console.log(chalk.red.bold(new Date()))
-  console.log(chalk.green.bold(`Work completed. Finally`))
+  console.log(chalk.green.bold(`Work completed!`))
 })

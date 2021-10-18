@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "author": "mcntai",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./ --ext .js --fix",
@@ -11,13 +12,12 @@
   },
   "dependencies": {
     "@babel/core": "^7.4.5",
-    "@babel/node": "^7.4.5",
     "@babel/eslint-parser": "^7.15.0",
+    "@babel/node": "^7.4.5",
     "async": "^3.2.1",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.10",
-    "puppeteer": "^10.2.0",
-    "transliteration": "^2.2.0"
+    "puppeteer": "^10.2.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
